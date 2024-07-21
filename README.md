@@ -1,4 +1,4 @@
-## ## Orbital-js
+## Orbital-js
 
 Orbital-js is a free and open source application for creating a personal blog with a subscription.
 
