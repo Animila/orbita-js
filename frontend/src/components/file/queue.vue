@@ -9,7 +9,7 @@
   >
     <div class="upload-items">
       <TransitionGroup name="fade">
-        <div v-for="item in uploading" :key="item.id" class="p-3 bg-white border rounded">
+        <div v-for="item in uploading" :key="item.id" class="p-3 bg-body border rounded">
           <div class="fw-bold">{{ item.filename }}</div>
           <div class="d-flex align-items-center gap-2">
             <BProgress class="w-100">
@@ -51,8 +51,6 @@
 <script setup lang="ts">
 import prettyBytes from 'pretty-bytes'
 import {formatDistanceToNow, formatDuration, fromUnixTime, intervalToDuration} from 'date-fns'
-import ru from 'date-fns/locale/ru/index.js'
-import de from 'date-fns/locale/de/index.js'
 import {DetailedError, Upload} from 'tus-js-client'
 import type {HttpRequest, UploadOptions} from 'tus-js-client'
 import type {BaseColorVariant} from 'bootstrap-vue-next'
@@ -88,16 +86,7 @@ type UploadItem = {
 
 const {t} = useI18n()
 const {token} = useAuth()
-const locale = computed(() => {
-  const code = useI18n().locale.value
-  if (code === 'ru') {
-    return ru
-  }
-  if (code === 'de') {
-    return de
-  }
-  return undefined
-})
+const locale = useDateLocale()
 
 const uploading: Ref<UploadItem[]> = ref([])
 const uploads: Record<string, Upload> = {}

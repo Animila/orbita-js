@@ -40,7 +40,7 @@ class Manticore
         $index = $this->client->index($this->indexName);
         $index->create([
             'uuid' => ['type' => 'string'],
-            'title' => ['type' => 'string'],
+            'title' => ['type' => 'text'],
             'teaser' => ['type' => 'text'],
             'content' => ['type' => 'text'],
             'tags' => ['type' => 'text'],
@@ -54,7 +54,19 @@ class Manticore
 
     public function getIndex(): Index
     {
-        return $this->client->index($this->indexName);
+        try {
+            $index = $this->client->index($this->indexName);
+            $schema = $index->describe();
+            // Migrate from old wrong index
+            if ($schema['title']['Type'] !== 'text') {
+                $index->drop(true);
+                $this->createIndex();
+            }
+        } catch (ResponseException $e) {
+            $index = $this->createIndex();
+        }
+
+        return $index;
     }
 
     public function getSearch(): Search
@@ -66,12 +78,6 @@ class Manticore
     public function index(bool $truncate = true): int
     {
         $index = $this->getIndex();
-        try {
-            $index->status();
-        } catch (ResponseException $e) {
-            $index = $this->createIndex();
-        }
-
         if ($truncate) {
             $index->truncate();
         }
